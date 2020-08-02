@@ -24,7 +24,7 @@ function initData(vm){
     let data = vm.$options.data;
     // debugger;
     // console.log(typeof data)
-    data = typeof data == 'function'?data.call(vm):data;
+    vm._data = data = typeof data == 'function'?data.call(vm):data;
     // 对象 或数组
     // console.log(data)
     // 数据劫持

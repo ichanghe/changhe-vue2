@@ -4,9 +4,43 @@
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Vue = factory());
 }(this, (function () { 'use strict';
 
+    class Observer{
+        constructor(value){
+            // definproperty 重新定义属性
+            this.walk(value);
+        }
+        walk(data){
+            console.log(data);
+            let keys = Object.keys(data);
+            keys.forEach((key)=>{
+                defineReactive(data,key,data[key]);
+            });
+        }
+
+    }
+     function defineReactive(data,key,value){
+         observer(value);
+            Object.defineProperty(data,key,{
+                get(){
+                    console.log('get value');
+                    return value
+                },
+                set(newValue){
+                    if(newValue == value)return
+                    observer(newValue);
+                    value= newValue;
+
+                    console.log('set value');
+                }
+            });
+    }
     function observer(data){
-        debugger
+        // debugger
+        // console.log(data)
+        if(typeof data !== 'object'&& data !== null)return //不是对象就检测对象
         console.log(data);
+        // debugger
+        return new Observer(data)
     }
 
     function initState(vm){
@@ -23,7 +57,7 @@
         let data = vm.$options.data;
         // debugger;
         // console.log(typeof data)
-        data = typeof data == 'function'?data.call(vm):data;
+        vm._data = data = typeof data == 'function'?data.call(vm):data;
         // 对象 或数组
         // console.log(data)
         // 数据劫持

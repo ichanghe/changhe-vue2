@@ -4,7 +4,7 @@
   "description": "手动实现vue2",
   "main": "index.js",
   "scripts": {
-    "dev":"rollup -c -w",
+    "dev": "rollup -c -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
