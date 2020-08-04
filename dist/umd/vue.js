@@ -129,7 +129,25 @@
             // debugger;
             initState(vm);
             // 数据变化会更新
+
+            // 如果传入el,实现挂在流程
+            if(vm.$options.el){
+                vm.$mount(vm.$options,el);
+            }
         }; 
+        Vue.prototype.$mount = function (el){
+            el = document.querySelector(el);
+            // render->template->el内容
+            if(!options.render){
+                // 模版编译
+                let template = options.template;
+                if(!template&&el){
+                    template = el.outerHTML;
+
+                }
+                console.log(template);
+            }
+        };
     }
 
     function Vue(options){
