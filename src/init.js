@@ -1,4 +1,5 @@
 import {initState} from './state'
+import { compileToFunction } from './compiler/index'
 export function initMixin(Vue){
     // console.log(options)
     Vue.prototype._init = function(options){
@@ -11,11 +12,12 @@ export function initMixin(Vue){
 
         // 如果传入el,实现挂在流程
         if(vm.$options.el){
-            vm.$mount(vm.$options,el)
+            vm.$mount(vm.$options.el)
         }
     } 
     Vue.prototype.$mount = function (el){
         const vm= this
+        const options = vm.$options;
         el = document.querySelector(el);
         // render->template->el内容
         if(!options.render){
@@ -23,9 +25,8 @@ export function initMixin(Vue){
             let template = options.template
             if(!template&&el){
                 template = el.outerHTML;
-
             }
-            console.log(template)
+            const render = compileToFunction(template)
         }
     }
 }

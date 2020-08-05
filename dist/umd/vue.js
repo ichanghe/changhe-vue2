@@ -120,6 +120,63 @@
 
     }
 
+    // 字母a-zA-Z_ - . 数组小写字母 大写字母  
+    const ncname = `[a-zA-Z_][\\-\\.0-9_a-zA-Z]*`; // 标签名
+    // ?:匹配不捕获   <aaa:aaa>
+    const qnameCapture = `((?:${ncname}\\:)?${ncname})`;
+    // startTagOpen 可以匹配到开始标签 正则捕获到的内容是 (标签名)
+    const startTagOpen = new RegExp(`^<${qnameCapture}`); // 标签开头的正则 捕获的内容是标签名
+    // <div aa   =   "123"  bb=123  cc='123'
+    // 捕获到的是 属性名 和 属性值 arguments[1] || arguments[2] || arguments[2]
+    const attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/; // 匹配属性的
+    // <div >   <br/>
+    const startTagClose = /^\s*(\/?)>/; // 匹配标签结束的 >
+
+    function parseHTML(html){
+        while(html){
+            let textEnd = html.indexOf('<');
+            if(textEnd == 0){
+                // 索引为0 是标签
+              let startTagMatch =  parseStartTag();
+              break;
+            }
+            function advance(n){
+                html = html.substring(n);
+            }
+            function parseStartTag(){
+                let start =  html.match(startTagOpen);
+                if(start){
+                    const match = {
+                        tagName:start[1],
+                        attrs:[]
+                    };
+                    advance(start[0].length);
+                    console.log(start,'-----');
+                    let end ,attr;
+                    while(!(end == html.match(startTagClose))&& (attr = html.match(attribute))){
+                        advance(attr[0].length);
+                        // match.attrs.push({name:attr[1],value:attr[3]||attr[4]||attr[5]})
+                    }
+                    // if(end){
+                    //     advance(end[0].length)
+                    //     return match;
+                    // }
+                    console.log(html,'html');
+                }
+                
+                
+            }
+        }
+    }
+    // ast 语法树
+    function compileToFunction(template){
+        console.log(template);
+        let root =    parseHTML(template);
+        return function render(){
+
+        }
+    }
+
     function initMixin(Vue){
         // console.log(options)
         Vue.prototype._init = function(options){
@@ -132,10 +189,12 @@
 
             // 如果传入el,实现挂在流程
             if(vm.$options.el){
-                vm.$mount(vm.$options,el);
+                vm.$mount(vm.$options.el);
             }
         }; 
         Vue.prototype.$mount = function (el){
+            const vm= this;
+            const options = vm.$options;
             el = document.querySelector(el);
             // render->template->el内容
             if(!options.render){
@@ -143,9 +202,8 @@
                 let template = options.template;
                 if(!template&&el){
                     template = el.outerHTML;
-
                 }
-                console.log(template);
+                const render = compileToFunction(template);
             }
         };
     }

@@ -16,8 +16,46 @@ const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g
 const ELEMENT_NDOE='1';
 const TEXT_NODE='3'
 
+function parseHTML(html){
+    while(html){
+        let textEnd = html.indexOf('<');
+        if(textEnd == 0){
+            // 索引为0 是标签
+          let startTagMatch =  parseStartTag()
+          break;
+        }
+        function advance(n){
+            html = html.substring(n);
+        }
+        function parseStartTag(){
+            let start =  html.match(startTagOpen)
+            if(start){
+                const match = {
+                    tagName:start[1],
+                    attrs:[]
+                }
+                advance(start[0].length)
+                console.log(start,'-----')
+                let end ,attr;
+                while(!(end == html.match(startTagClose))&& (attr = html.match(attribute))){
+                    advance(attr[0].length);
+                    // match.attrs.push({name:attr[1],value:attr[3]||attr[4]||attr[5]})
+                }
+                // if(end){
+                //     advance(end[0].length)
+                //     return match;
+                // }
+                console.log(html,'html')
+            }
+            
+            
+        }
+    }
+}
 // ast 语法树
 export function compileToFunction(template){
+    console.log(template)
+    let root =    parseHTML(template)
     return function render(){
 
     }
